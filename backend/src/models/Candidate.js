@@ -36,6 +36,9 @@ const candidateSchema = new mongoose.Schema(
     resumeFileName: {
       type: String,
     },
+    resumePublicId: {
+      type: String, // Cloudinary public ID for deletion
+    },
     referredBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

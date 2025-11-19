@@ -15,7 +15,7 @@ export type Candidate = {
     _id: string;
     name: string;
     email: string;
-    role: 'admin' | 'user';
+    role: 'admin' | 'user' | 'hr_manager';
   } | string;
   createdAt: string;
   updatedAt: string;
@@ -44,7 +44,7 @@ export type User = {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' | 'hr_manager';
 };
 
 export type AuthResponse = {
@@ -61,7 +61,7 @@ export type RegisterPayload = {
   name: string;
   email: string;
   password: string;
-  role?: 'admin' | 'user';
+  role?: 'admin' | 'user' | 'hr_manager';
 };
 
 export type Profile = {
@@ -89,7 +89,7 @@ export type AdminUser = {
   id: string;
   name: string;
   email: string;
-  role: 'admin' | 'user';
+  role: 'admin' | 'user' | 'hr_manager';
   createdAt: string;
   updatedAt: string;
 };
@@ -103,6 +103,7 @@ export type AdminStats = {
     _id: string;
     name: string;
     email: string;
+    role?: 'admin' | 'user' | 'hr_manager';
     count: number;
   }>;
   recentCandidates: Candidate[];

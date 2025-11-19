@@ -22,7 +22,7 @@ router.put(
   '/users/:id/role',
   [
     param('id').isMongoId().withMessage('Invalid user id'),
-    body('role').isIn(['admin', 'user']).withMessage('Role must be admin or user'),
+    body('role').isIn(['admin', 'user', 'hr_manager']).withMessage('Role must be admin, user, or hr_manager'),
   ],
   validateRequest,
   updateUserRole

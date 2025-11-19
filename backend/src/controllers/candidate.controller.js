@@ -1,4 +1,5 @@
 import Candidate, { CANDIDATE_STATUSES } from '../models/Candidate.js';
+import { uploadToCloudinary, deleteFromCloudinary } from '../config/cloudinary.js';
 
 export const createCandidate = async (req, res, next) => {
   try {
@@ -13,8 +14,20 @@ export const createCandidate = async (req, res, next) => {
     };
 
     if (req.file) {
-      candidateData.resumeUrl = `/uploads/${req.file.filename}`;
-      candidateData.resumeFileName = req.file.originalname;
+      try {
+        // Upload file to Cloudinary
+        const cloudinaryResult = await uploadToCloudinary(req.file, req.file.originalname);
+        
+        // Store Cloudinary secure URL and public ID
+        candidateData.resumeUrl = cloudinaryResult.secure_url;
+        candidateData.resumeFileName = req.file.originalname;
+        candidateData.resumePublicId = cloudinaryResult.public_id; // Store public_id for deletion later
+      } catch (uploadError) {
+        console.error('Error uploading to Cloudinary:', uploadError);
+        return res.status(500).json({
+          message: 'Failed to upload resume. Please try again.',
+        });
+      }
     }
 
     const candidate = await Candidate.create(candidateData);
@@ -85,11 +98,24 @@ export const updateCandidateStatus = async (req, res, next) => {
 export const deleteCandidate = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const candidate = await Candidate.findByIdAndDelete(id);
+    const candidate = await Candidate.findById(id);
 
     if (!candidate) {
       return res.status(404).json({ message: 'Candidate not found' });
     }
+
+    // Delete resume from Cloudinary if it exists
+    if (candidate.resumePublicId) {
+      try {
+        await deleteFromCloudinary(candidate.resumePublicId);
+      } catch (deleteError) {
+        console.error('Error deleting file from Cloudinary:', deleteError);
+        // Continue with candidate deletion even if file deletion fails
+      }
+    }
+
+    // Delete candidate from database
+    await Candidate.findByIdAndDelete(id);
 
     res.json({ message: 'Candidate removed' });
   } catch (error) {

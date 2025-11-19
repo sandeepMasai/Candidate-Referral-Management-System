@@ -7,6 +7,13 @@ import { getAdminStats, getAllUsers, updateUserRole, deleteUser, listCandidates,
 import type { AdminStats, AdminUser, Candidate, CandidateStatus } from '../types';
 import { CANDIDATE_STATUSES } from '../types';
 
+const formatRole = (role: string) => {
+    return role
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+};
+
 const AdminDashboard = () => {
     const navigate = useNavigate();
     const { user } = useSelector((state: RootState) => state.auth);
@@ -86,7 +93,7 @@ const AdminDashboard = () => {
         }
     };
 
-    const handleRoleChange = async (userId: string, newRole: 'admin' | 'user') => {
+    const handleRoleChange = async (userId: string, newRole: 'admin' | 'user' | 'hr_manager') => {
         setBusyUserId(userId);
         try {
             const updated = await updateUserRole(userId, newRole);
@@ -332,7 +339,7 @@ const AdminDashboard = () => {
                                                 value={adminUser.role}
                                                 disabled={busyUserId === adminUser._id || adminUser._id === user?.id}
                                                 onChange={(e) =>
-                                                    handleRoleChange(adminUser._id, e.target.value as 'admin' | 'user')
+                                                    handleRoleChange(adminUser._id, e.target.value as 'admin' | 'user' | 'hr_manager')
                                                 }
                                                 style={{
                                                     padding: '0.35rem 0.65rem',
@@ -342,6 +349,7 @@ const AdminDashboard = () => {
                                                 }}
                                             >
                                                 <option value="user">User</option>
+                                                <option value="hr_manager">HR Manager</option>
                                                 <option value="admin">Admin</option>
                                             </select>
                                         </td>
@@ -453,7 +461,7 @@ const AdminDashboard = () => {
                                                         <strong>{referrer.name}</strong>
                                                         <span className="muted">{referrer.email}</span>
                                                         <span className="muted" style={{ fontSize: '0.75rem' }}>
-                                                            ({referrer.role})
+                                                            ({formatRole(referrer.role)})
                                                         </span>
                                                     </div>
                                                 ) : (

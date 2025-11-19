@@ -11,12 +11,27 @@ MONGODB_DB_NAME=candidate_referrals
 MONGODB_AUTH_SOURCE=candidate_referrals
 PORT=5000
 CLIENT_ORIGIN=http://localhost:5173
-UPLOAD_DIR=uploads
 MAX_FILE_SIZE_MB=5
 JWT_SECRET=super-secret-key
 JWT_EXPIRES_IN=7d
 RESET_TOKEN_EXPIRES_MINUTES=30
+
+# Cloudinary Configuration (Required for Resume Upload)
+CLOUDINARY_CLOUD_NAME=<your-cloudinary-cloud-name>
+CLOUDINARY_API_KEY=<your-cloudinary-api-key>
+CLOUDINARY_API_SECRET=<your-cloudinary-api-secret>
 ```
+
+### Setting up Cloudinary
+
+1. Create a free account at [Cloudinary](https://cloudinary.com/)
+2. Go to your Dashboard and copy:
+   - **Cloud Name** → `CLOUDINARY_CLOUD_NAME`
+   - **API Key** → `CLOUDINARY_API_KEY`
+   - **API Secret** → `CLOUDINARY_API_SECRET`
+3. Add these values to your `.env` file
+
+**Note:** Resumes are now stored on Cloudinary instead of local file system. The `/uploads` static route is kept for backward compatibility with old records.
 
 If your MongoDB user was created inside a database other than `admin`, set
 `MONGODB_AUTH_SOURCE` to that database name to avoid `bad auth` errors. When you

@@ -7,7 +7,7 @@ import {
   getMetrics,
   updateCandidateStatus,
 } from '../controllers/candidate.controller.js';
-import upload from '../middleware/upload.js';
+import upload from '../config/cloudinary.js';
 import validateRequest from '../middleware/validateRequest.js';
 import { createCandidateValidators, statusUpdateValidators } from '../utils/validators.js';
 import authenticate from '../middleware/auth.js';

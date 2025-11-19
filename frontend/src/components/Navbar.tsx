@@ -4,6 +4,13 @@ import { Shield } from 'lucide-react';
 import type { AppDispatch, RootState } from '../store/store';
 import { logout } from '../store/authSlice';
 
+const formatRole = (role: string) => {
+  return role
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
 const Navbar = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
@@ -51,7 +58,7 @@ const Navbar = () => {
             <Link to="/profile" className="navbar-user-link">
               <div className="navbar-user">
                 <span className="navbar-user-name">{user.name}</span>
-                <span className="navbar-user-role">{user.role}</span>
+                <span className="navbar-user-role">{formatRole(user.role)}</span>
               </div>
             </Link>
           )}

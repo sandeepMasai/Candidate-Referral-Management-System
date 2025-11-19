@@ -1,16 +1,26 @@
 import { useState, useEffect, type FormEvent, type ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
-import type { RootState } from '../store/store';
-import { getProfile, updateProfile } from '../lib/api';
+import { useSelector, useDispatch } from 'react-redux';
+import type { RootState, AppDispatch } from '../store/store';
+import { getCurrentUser } from '../store/authSlice';
+import { getProfile, updateProfile, updateUserRole } from '../lib/api';
 import type { Profile, ProfileUpdatePayload } from '../types';
+
+const formatRole = (role: string) => {
+  return role
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [updatingRole, setUpdatingRole] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -81,6 +91,26 @@ const ProfilePage = () => {
     }
   };
 
+  const handleRoleChange = async (newRole: 'admin' | 'user' | 'hr_manager') => {
+    if (!user || newRole === user.role) return;
+
+    setUpdatingRole(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      await updateUserRole(user.id, newRole);
+      // Refresh user data to reflect the new role
+      await dispatch(getCurrentUser());
+      setSuccess(`Role updated to ${formatRole(newRole)} successfully!`);
+    } catch (err: any) {
+      console.error(err);
+      setError(err.response?.data?.message || 'Failed to update role');
+    } finally {
+      setUpdatingRole(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="app-shell">
@@ -131,7 +161,47 @@ const ProfilePage = () => {
             </div>
             <div style={{ marginBottom: '1rem' }}>
               <strong>Role:</strong>{' '}
-              <span style={{ textTransform: 'capitalize' }}>{user?.role}</span>
+              {user?.role === 'admin' ? (
+                <select
+                  value={user.role}
+                  disabled={updatingRole}
+                  onChange={(e) =>
+                    handleRoleChange(e.target.value as 'admin' | 'user' | 'hr_manager')
+                  }
+                  style={{
+                    padding: '0.35rem 0.65rem',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '2px solid var(--color-border)',
+                    cursor: updatingRole ? 'not-allowed' : 'pointer',
+                    fontSize: '0.95rem',
+                    fontFamily: 'inherit',
+                    marginLeft: '0.5rem',
+                    backgroundColor: 'var(--color-surface)',
+                    color: 'var(--color-text)',
+                    transition: 'all var(--transition-base)',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = 'var(--color-primary)';
+                    e.target.style.boxShadow =
+                      '0 0 0 4px rgba(99, 102, 241, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'var(--color-border)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                >
+                  <option value="user">User</option>
+                  <option value="hr_manager">HR Manager</option>
+                  <option value="admin">Admin</option>
+                </select>
+              ) : (
+                <span>{formatRole(user?.role || 'user')}</span>
+              )}
+              {updatingRole && (
+                <span style={{ marginLeft: '0.5rem', fontSize: '0.875rem', color: 'var(--color-muted)' }}>
+                  (Updating...)
+                </span>
+              )}
             </div>
           </div>
 

@@ -150,7 +150,7 @@ export const getAllUsers = async (): Promise<AdminUser[]> => {
   return response.data.users;
 };
 
-export const updateUserRole = async (userId: string, role: 'admin' | 'user'): Promise<AdminUser> => {
+export const updateUserRole = async (userId: string, role: 'admin' | 'user' | 'hr_manager'): Promise<AdminUser> => {
   const response = await apiClient.put<{ user: AdminUser }>(`/admin/users/${userId}/role`, { role });
   return response.data.user;
 };
