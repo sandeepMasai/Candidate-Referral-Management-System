@@ -13,6 +13,7 @@ Frontend API RUN https://candidate-referral-management-system-1-ixmp.onrender.co
   - JWT-based authentication
   - Password reset functionality
   - Profile management
+  - login admin := admin@gmail.com password:= Sandeep@123   test only 
 
 - **Candidate Management**
   - Submit candidate referrals with resume uploads
@@ -86,7 +87,7 @@ Before you begin, ensure you have the following installed:
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/sandeepMasai/Candidate-Referral-Management-System.git
    cd Candidate-Referral-Management-System
    ```
 
@@ -556,7 +557,7 @@ For issues or questions, please contact the development team.
 
 ### Future Enhancements
 
-- [ ] Add pagination to list endpoints
+
 - [ ] Implement rate limiting
 - [ ] Add email service for password reset
 - [ ] Enhance file validation (PDF content verification)
