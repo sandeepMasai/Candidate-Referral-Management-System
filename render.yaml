@@ -58,7 +58,7 @@ services:
   - type: web
     name: candidate-referral-frontend
     env: static
-    region: oregon  # Match backend region for lower latency
+    # Note: Static sites cannot have a region (they are globally distributed)
     repo: https://github.com/sandeepMasai/Candidate-Referral-Management-System.git
     branch: main
     rootDir: frontend
