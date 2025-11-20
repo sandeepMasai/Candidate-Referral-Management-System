@@ -161,6 +161,25 @@ VITE_BACKEND_ORIGIN=http://localhost:5000
 
 **Note**: Restart the development server after adding or changing these values.
 
+## 🌐 Deployment
+
+For production deployment to Render, see these guides:
+
+- **[Render Deployment Guide](./RENDER_DEPLOYMENT.md)** - Complete step-by-step instructions
+- **[Deployment Checklist](./DEPLOYMENT_CHECKLIST.md)** - Quick reference checklist
+- **[render.yaml](./render.yaml)** - Infrastructure as Code configuration (optional)
+
+### Quick Deployment Summary
+
+1. **Backend**: Deploy as Web Service on Render
+2. **Frontend**: Deploy as Static Site on Render
+3. **Database**: Use MongoDB Atlas
+4. **Storage**: Configure Cloudinary for resume uploads
+
+**See [RENDER_DEPLOYMENT.md](./RENDER_DEPLOYMENT.md) for detailed step-by-step instructions.**
+
+---
+
 ## 🚀 Running the Application Locally
 
 Follow these steps to run the project on your local machine:
