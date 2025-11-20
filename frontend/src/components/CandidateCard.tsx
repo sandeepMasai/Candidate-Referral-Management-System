@@ -91,12 +91,12 @@ const CandidateCard = ({
               <a
                 href={resumeLink}
                 target="_blank"
-                rel="noreferrer"
+                rel="noreferrer noopener"
                 className="resume-link"
-                download
+                type="application/pdf"
               >
                 <Download size={14} />
-                {candidate.resumeFileName ?? 'Download Resume'}
+                {candidate.resumeFileName ?? 'View Resume'}
               </a>
             </div>
           )}

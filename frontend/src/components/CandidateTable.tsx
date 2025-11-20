@@ -103,7 +103,12 @@ const CandidateTable = ({
                 <td>{new Date(candidate.createdAt).toLocaleDateString()}</td>
                 <td>
                   {resumeLink ? (
-                    <a href={resumeLink} target="_blank" rel="noreferrer">
+                    <a 
+                      href={resumeLink} 
+                      target="_blank" 
+                      rel="noreferrer noopener"
+                      type="application/pdf"
+                    >
                       {candidate.resumeFileName ?? 'Resume'}
                     </a>
                   ) : (

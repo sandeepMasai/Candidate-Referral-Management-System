@@ -225,26 +225,204 @@
   gap: 1rem;
 }
 
+/* File Upload Styles */
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.file-input-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.95rem;
+  color: #1f2937;
+}
+
+.file-input-hint {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
 .file-input {
   position: relative;
   overflow: hidden;
+  display: block;
 }
 
 .file-input input[type='file'] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  z-index: 2;
+}
+
+.file-input-content {
   border: 2px dashed var(--color-border);
-  padding: 1.5rem;
+  padding: 2rem 1.5rem;
   cursor: pointer;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
   transition: all var(--transition-base);
   border-radius: var(--radius-md);
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  text-align: center;
+  min-height: 140px;
 }
 
-.file-input input[type='file']:hover {
+.file-input:hover .file-input-content {
   border-color: var(--color-primary);
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.file-input:active .file-input-content {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.file-input-icon {
+  color: var(--color-primary);
+  opacity: 0.8;
+}
+
+.file-input-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  color: var(--color-text);
+}
+
+.file-input-text strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.file-input-format {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+/* File Preview Styles */
+.file-preview {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  transition: all var(--transition-base);
+}
+
+.file-preview:hover {
+  border-color: var(--color-primary-light);
+  box-shadow: var(--shadow-sm);
+}
+
+.file-preview-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-preview-icon {
+  color: var(--color-error);
+  flex-shrink: 0;
+}
+
+.file-preview-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.file-preview-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-preview-size {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.file-preview-success {
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.file-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition: all var(--transition-base);
+  flex-shrink: 0;
+}
+
+.file-remove-btn:hover {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  transform: scale(1.1);
+}
+
+.file-remove-btn:active {
+  transform: scale(0.95);
+}
+
+/* File Error Styles */
+.file-error {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  color: var(--color-error);
+  font-size: 0.9rem;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  animation: shake 0.3s ease-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.file-error svg {
+  flex-shrink: 0;
 }
 
 button {
@@ -1382,6 +1560,46 @@ button.ghost:hover:not(:disabled) {
   .grid.two-cols {
     grid-template-columns: 1fr;
     gap: 0.75rem;
+  }
+
+  /* File Upload Mobile */
+  .file-input-content {
+    padding: 1.5rem 1rem;
+    min-height: 120px;
+    gap: 0.5rem;
+  }
+
+  .file-input-text strong {
+    font-size: 0.9rem;
+  }
+
+  .file-input-format {
+    font-size: 0.8rem;
+  }
+
+  .file-preview {
+    padding: 0.85rem 1rem;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .file-preview-info {
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .file-preview-name {
+    font-size: 0.85rem;
+  }
+
+  .file-preview-size {
+    font-size: 0.75rem;
+  }
+
+  .file-error {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.85rem;
   }
 
   /* Filters Mobile */

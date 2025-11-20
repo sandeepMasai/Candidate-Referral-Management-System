@@ -96,9 +96,11 @@ const Dashboard = () => {
       await createCandidate(payload);
       showSuccess('Candidate referred successfully.');
       await Promise.all([loadCandidates(), loadMetrics()]);
-    } catch (error) {
-      console.error(error);
-      showError('Failed to submit referral.');
+    } catch (error: any) {
+      console.error('Error creating candidate:', error);
+      const errorMessage = error.response?.data?.message || error.message || 'Failed to submit referral.';
+      showError(errorMessage);
+      throw error; // Re-throw so form doesn't reset on error
     } finally {
       setFormSubmitting(false);
     }

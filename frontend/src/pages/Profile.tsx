@@ -17,7 +17,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { user } = useSelector((state: RootState) => state.auth);
-  const [profile, setProfile] = useState<Profile | null>(null);
+  const [_profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [updatingRole, setUpdatingRole] = useState(false);

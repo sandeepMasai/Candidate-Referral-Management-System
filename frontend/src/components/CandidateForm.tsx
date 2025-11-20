@@ -1,10 +1,14 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { Upload, FileText, X, CheckCircle2, AlertCircle } from 'lucide-react';
 import type { CandidateFormPayload } from '../types';
 
 type CandidateFormProps = {
   onSubmit: (payload: CandidateFormPayload) => Promise<void>;
   isSubmitting: boolean;
 };
+
+const MAX_FILE_SIZE_MB = 5;
+const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024;
 
 const emptyForm: CandidateFormPayload = {
   name: '',
@@ -16,6 +20,7 @@ const emptyForm: CandidateFormPayload = {
 
 const CandidateForm = ({ onSubmit, isSubmitting }: CandidateFormProps) => {
   const [form, setForm] = useState<CandidateFormPayload>(emptyForm);
+  const [fileError, setFileError] = useState<string | null>(null);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -24,14 +29,65 @@ const CandidateForm = ({ onSubmit, isSubmitting }: CandidateFormProps) => {
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] ?? null;
-    setForm((prev) => ({ ...prev, resume: file }));
+    setFileError(null);
+
+    if (file) {
+      // Validate file type
+      if (file.type !== 'application/pdf') {
+        setFileError('Only PDF files are allowed');
+        setForm((prev) => ({ ...prev, resume: null }));
+        event.target.value = '';
+        return;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE_BYTES) {
+        setFileError(`File size must be less than ${MAX_FILE_SIZE_MB}MB`);
+        setForm((prev) => ({ ...prev, resume: null }));
+        event.target.value = '';
+        return;
+      }
+
+      setForm((prev) => ({ ...prev, resume: file }));
+    } else {
+      setForm((prev) => ({ ...prev, resume: null }));
+    }
+  };
+
+  const handleRemoveFile = () => {
+    setForm((prev) => ({ ...prev, resume: null }));
+    setFileError(null);
+    // Reset file input
+    const fileInput = document.querySelector('input[type="file"][name="resume"]') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
+  };
+
+  const formatFileSize = (bytes: number): string => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    await onSubmit(form);
-    setForm(emptyForm);
-    event.currentTarget.reset();
+    setFileError(null);
+    
+    try {
+      await onSubmit(form);
+      // Only reset form on success
+      setForm(emptyForm);
+      setFileError(null);
+      if (event.currentTarget) {
+        event.currentTarget.reset();
+      }
+    } catch (error) {
+      // Error is handled by parent component, but we keep form state
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (
@@ -95,15 +151,59 @@ const CandidateForm = ({ onSubmit, isSubmitting }: CandidateFormProps) => {
         </label>
       </div>
 
-      <label className="file-input">
-        <span>Resume (PDF, optional)</span>
-        <input
-          type="file"
-          name="resume"
-          accept="application/pdf"
-          onChange={handleFileChange}
-        />
-      </label>
+      <div className="file-upload-wrapper">
+        <label className="file-input-label">
+          <span>Resume (PDF, optional)</span>
+          <span className="file-input-hint">Maximum file size: {MAX_FILE_SIZE_MB}MB</span>
+        </label>
+        
+        {!form.resume ? (
+          <label className="file-input">
+            <input
+              type="file"
+              name="resume"
+              accept="application/pdf"
+              onChange={handleFileChange}
+              disabled={isSubmitting}
+            />
+            <div className="file-input-content">
+              <Upload size={24} className="file-input-icon" />
+              <div className="file-input-text">
+                <strong>Click to upload</strong> or drag and drop
+                <span className="file-input-format">PDF only</span>
+              </div>
+            </div>
+          </label>
+        ) : (
+          <div className="file-preview">
+            <div className="file-preview-info">
+              <FileText size={20} className="file-preview-icon" />
+              <div className="file-preview-details">
+                <strong className="file-preview-name">{form.resume.name}</strong>
+                <span className="file-preview-size">{formatFileSize(form.resume.size)}</span>
+              </div>
+              <CheckCircle2 size={20} className="file-preview-success" />
+            </div>
+            {!isSubmitting && (
+              <button
+                type="button"
+                onClick={handleRemoveFile}
+                className="file-remove-btn"
+                title="Remove file"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+        )}
+
+        {fileError && (
+          <div className="file-error">
+            <AlertCircle size={16} />
+            <span>{fileError}</span>
+          </div>
+        )}
+      </div>
     </form>
   );
 };

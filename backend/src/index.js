@@ -17,10 +17,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
-// Allow both MONGO_URI and MONGODB_URI env names
-if (!process.env.MONGO_URI && process.env.MONGODB_URI) {
-  process.env.MONGO_URI = process.env.MONGODB_URI;
-}
+
 
 const app = express();
 
@@ -33,7 +30,7 @@ app.use(
   })
 );
 app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' })); // Support larger form data for file uploads
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 
 const uploadsDir = path.resolve(__dirname, '../uploads');
@@ -68,12 +65,5 @@ startServer().catch((error) => {
   process.exit(1);
 });
 
-process.on('unhandledRejection', (reason) => {
-  console.error('Unhandled promise rejection:', reason);
-});
 
-process.on('SIGINT', () => {
-  console.log('Received SIGINT. Shutting down gracefully.');
-  process.exit(0);
-});
 

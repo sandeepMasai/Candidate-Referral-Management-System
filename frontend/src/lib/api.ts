@@ -30,6 +30,13 @@ apiClient.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
+
+  // For FormData, let axios set Content-Type automatically with boundary
+  // Don't manually set Content-Type for FormData uploads
+  if (config.data instanceof FormData) {
+    delete config.headers['Content-Type'];
+  }
+
   return config;
 });
 
@@ -67,25 +74,48 @@ export const fetchMetrics = async () => {
 };
 
 export const createCandidate = async (payload: CandidateFormPayload) => {
+  // Upload file directly to backend via FormData (backend handles Cloudinary upload)
   const formData = new FormData();
+
   formData.append('name', payload.name);
   formData.append('email', payload.email);
   formData.append('phone', payload.phone);
   formData.append('jobTitle', payload.jobTitle);
 
+  // If there's a resume, append it to form data (backend will upload to Cloudinary)
   if (payload.resume) {
     formData.append('resume', payload.resume);
+    console.log('Adding resume to FormData:', {
+      name: payload.resume.name,
+      size: payload.resume.size,
+      type: payload.resume.type,
+    });
   }
 
-  const response = await apiClient.post<{ candidate: Candidate; message: string }>(
-    '/candidates',
-    formData,
-    {
-      headers: { 'Content-Type': 'multipart/form-data' },
-    }
-  );
+  try {
+    // Send FormData to backend (backend handles Cloudinary upload via multer + uploadToCloudinary)
+    // Note: Don't set Content-Type header - axios will set it automatically with boundary for FormData
+    const response = await apiClient.post<{ candidate: Candidate; message: string }>(
+      '/candidates',
+      formData,
+      {
+        timeout: 60000, // 60 second timeout for file uploads
+        // Content-Type will be set automatically by axios for FormData
+      }
+    );
 
-  return response.data.candidate;
+    return response.data.candidate;
+  } catch (error: any) {
+    console.error('Error in createCandidate API call:', error);
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+
+    // Re-throw with better error message
+    const errorMessage = error.response?.data?.message || error.message || 'Failed to create candidate. Please try again.';
+    const enhancedError = new Error(errorMessage);
+    (enhancedError as any).response = error.response;
+    throw enhancedError;
+  }
 };
 
 export const updateCandidateStatus = async (id: string, status: CandidateStatus) => {
@@ -105,6 +135,7 @@ export const getResumeUrl = (resumePath?: string) => {
     return null;
   }
 
+  // If it's already a full URL (Cloudinary)
   if (/^https?:\/\//i.test(resumePath)) {
     return resumePath;
   }
