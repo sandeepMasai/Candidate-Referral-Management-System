@@ -557,7 +557,7 @@ For issues or questions, please contact the development team.
 
 ### Future Enhancements
 
-
+- [ ] Add pagination to list endpoints
 - [ ] Implement rate limiting
 - [ ] Add email service for password reset
 - [ ] Enhance file validation (PDF content verification)
