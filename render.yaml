@@ -20,7 +20,7 @@ services:
     env: node
     region: oregon  # Change to your preferred region (oregon, frankfurt, singapore, etc.)
     plan: free  # Options: free, starter, standard, pro
-    repo: https://github.com/YOUR_USERNAME/YOUR_REPO_NAME  # ⚠️ UPDATE THIS with your repo URL
+    repo:https://github.com/sandeepMasai/Candidate-Referral-Management-System.git # ⚠️ UPDATE THIS with your repo URL
     branch: main  # or your default branch
     rootDir: backend
     buildCommand: npm install
